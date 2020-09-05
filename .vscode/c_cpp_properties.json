@@ -1,0 +1,67 @@
+{
+    "configurations": [
+        {
+            "name": "!!! WARNING !!! AUTO-GENERATED FILE, PLEASE DO NOT MODIFY IT AND USE https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags"
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "/home/shaddy/sloeber-workspace/reobas/include",
+                "/home/shaddy/sloeber-workspace/reobas/src",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/cores/tiny",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5",
+                "/home/shaddy/.platformio/lib/LiquidCrystal_ID887/src",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/ATTinyCore/src",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/EEPROM",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/SPI",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/Servo/src",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/Servo_ATTinyCore/src",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/SoftwareSerial",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/Wire/src",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/tinyNeoPixel",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/tinyNeoPixel_Static",
+                "/home/shaddy/.platformio/packages/tool-unity",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/home/shaddy/sloeber-workspace/reobas/include",
+                    "/home/shaddy/sloeber-workspace/reobas/src",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/cores/tiny",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5",
+                    "/home/shaddy/.platformio/lib/LiquidCrystal_ID887/src",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/ATTinyCore/src",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/EEPROM",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/SPI",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/Servo/src",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/Servo_ATTinyCore/src",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/SoftwareSerial",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/Wire/src",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/tinyNeoPixel",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/tinyNeoPixel_Static",
+                    "/home/shaddy/.platformio/packages/tool-unity",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=40304",
+                "ARDUINO_AVR_ATTINYX5",
+                "F_CPU=8000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10808",
+                "__AVR_ATtiny45__",
+                ""
+            ],
+            "intelliSenseMode": "clang-x64",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "compilerPath": "/home/shaddy/.platformio/packages/toolchain-atmelavr/bin/avr-gcc",
+            "compilerArgs": [
+                "-mmcu=attiny45",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}
