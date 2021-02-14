@@ -35,22 +35,29 @@ void tinyDelay(int value){
     #endif 
 }
 
+void setPwm(uint8_t pwm){
+    #ifdef __AVR_ATtiny13__
+        if (pwm < 10){
+            pwm = 10;
+        }
+    #endif
+     if (pwm >= 90){
+        pwm = 90;
+    }
+    FastPwmPin::enablePwmPin(FAN_PIN, PWM_FREQ , pwm);
+}
+
 void stop(){
     #ifdef DEBUG_ALLOWED
         debug_info("fan off");
     #endif
-    #ifdef __AVR_ATtiny13__
-        FastPwmPin::enablePwmPin(FAN_PIN, PWM_FREQ , 10);
-    #else
-        FastPwmPin::enablePwmPin(FAN_PIN, PWM_FREQ , 1);
-    #endif
-
-        
+    setPwm(0);
+  
 }
 
 void setup(){
     debug_init();
-    stop();
+    //stop();
     pinMode(LED_PIN, OUTPUT);
     pinMode(THERMORESISTOR_PIN, INPUT);
     digitalWrite(LED_PIN, 1);
@@ -90,6 +97,9 @@ bool checkDiff(unsigned long value, unsigned long * last){
 }
 
 void initialDelay(){
+    digitalWrite(LED_PIN, 0);
+    tinyDelay(500);
+    digitalWrite(LED_PIN, 1);
     tinyDelay(500);
 }
 
@@ -100,7 +110,7 @@ void loop(){
     int percentage;
     if (temp > MIN_TEMP){
         if (checkDiff(1000, &last_on)){
-            FastPwmPin::enablePwmPin(FAN_PIN, PWM_FREQ , 99);
+            setPwm(99);
             initialDelay();
         } else {
             if (temp >= MAX_TEMP){
@@ -109,13 +119,10 @@ void loop(){
                 percentage = ((temp - MIN_TEMP) * 100) * (100 / (MAX_TEMP - MIN_TEMP)) / 100;
                 percentage += 10;
             }
-            if (percentage >= 100){
-                percentage = 99;
-            }
             #ifdef DEBUG_ALLOWED
                 debug_info("t:" , temp, " p:" , percentage);
             #endif
-            FastPwmPin::enablePwmPin(FAN_PIN, PWM_FREQ , percentage);
+            setPwm(percentage);
         }
         last_on = millis();
     } else {
