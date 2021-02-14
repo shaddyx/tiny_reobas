@@ -19,6 +19,16 @@
 #define MIN_TEMP 40
 #define MAX_TEMP 80
 
+
+void tinyDelay(int value){
+    #ifdef __AVR_ATtiny13__
+        // fix default prescaler configuration
+        delay(value / 8);
+    #else
+        delay(value); 
+    #endif 
+}
+
 void setup(){
     debug_init();
     pinMode(LED_PIN, OUTPUT);
@@ -27,15 +37,15 @@ void setup(){
     #ifdef DEBUG_ALLOWED
         debug_info("init complete");
     #endif
-    delay(1000);
+    tinyDelay(1000);
 }
 
 void checkAndBlinkError(int adcValue){
     if (adcValue == 1023){
         digitalWrite(LED_PIN, 1);
-        delay(100);
+        tinyDelay(100);
         digitalWrite(LED_PIN, 0);
-        delay(100);
+        tinyDelay(100);
     }
 }
 
@@ -66,11 +76,7 @@ bool checkDiff(unsigned long value, unsigned long * last){
 }
 
 void initialDelay(){
-    #ifdef __AVR_ATtiny13__
-        delay(100);
-    #else
-        delay(500); 
-    #endif 
+    tinyDelay(500);
 }
 
 unsigned long last_on = 0;
