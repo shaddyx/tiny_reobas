@@ -1,121 +1,106 @@
 #include <Arduino.h>
+#include <thermoresistor_calc.h>
+#include "debug.h"
+#include <FastPwmPin.h>
+#define length(array) (sizeof((array)) / sizeof((array)[0]))
+#ifdef ARDUINO_AVR_UNO
+    #define THERMORESISTOR_PIN A0
+    #define LED_PIN 13
+# else
+    #define ADC1 1
+    #define ADC2 2
+    #define ADC3 3
+    #define ADC4 4
+    #define THERMORESISTOR_PIN ADC2
+    #define LED_PIN PB3
+    #define FAN_PIN PB1
+#endif
 
-#define length(array) (sizeof((array))/sizeof((array)[0]))
-
-// значение 'другого' резистора
-#define SERIESRESISTOR 4700
-// к какому пину подключается термистор
-#define THERMISTORNOMINAL 100000
-#define TEMPERATURENOMINAL 25
-#define BCOEFFICIENT 3950
-
-#define MIN_OUTPUT 0
-#define MAX_OUTPUT 255
-#define RDIFF (MAX_OUTPUT - MIN_OUTPUT)
+#define MIN_TEMP 40
 #define MAX_TEMP 80
-//#define MIN_TEMP 30
-
-#define TINY 1
-#if TINY == 0
-    #undef TINY
-#endif
-#define INCREMENT 1
-#ifdef TINY
-    #define THERMISTORPIN A2
-    #define FANPIN PB0
-    #define VAR_RES_PIN A3
-#else
-    #define THERMISTORPIN A4
-    #define FANPIN 5
-    #define VAR_RES_PIN A1
-#endif
-#ifndef TINY
-    #define DEBUG 1
-#endif
-
-#if DEBUG == 0
-    #undef DEBUG
-#endif
-
-uint8_t matrix[] = {0, 10, 60, 100, 130, 150, 165, 178, 189, 200, 210, 218, 229, 234, 241, 247};
 
 void setup(){
-    #ifdef DEBUG
-        Serial.begin(9600);
+    debug_init();
+    pinMode(LED_PIN, OUTPUT);
+    pinMode(THERMORESISTOR_PIN, INPUT);
+    digitalWrite(LED_PIN, 1);
+    #ifdef DEBUG_ALLOWED
+        debug_info("init complete");
     #endif
-    pinMode(PB1, OUTPUT);
-    pinMode(FANPIN, OUTPUT);
-    pinMode(THERMISTORPIN, INPUT);
-    pinMode(VAR_RES_PIN, INPUT);
+    delay(1000);
 }
 
-float readResistance(){
-    float reading = analogRead(THERMISTORPIN);
-    reading = (1023 / reading) - 1;
-    reading = SERIESRESISTOR / reading;
-    return reading;
-}
-
-float resToTemp(float res){
-    float steinhart;
-    steinhart = res / THERMISTORNOMINAL; // (R/Ro)
-    steinhart = log(steinhart); // ln(R/Ro)
-    steinhart /= BCOEFFICIENT; // 1/B * ln(R/Ro)
-    steinhart += 1.0 / (TEMPERATURENOMINAL + 273.15); // + (1/To)
-    steinhart = 1.0 / steinhart; // инвертируем
-    steinhart -= 273.15; // конвертируем в градусы по Цельсию
-    return steinhart;
-}
-
-float min_temp = 0;
-void setRotation(float rotationSpeed){
-    int outputValue = 0;
-    for (int i=0; i < length(matrix); i++){
-        if (rotationSpeed > matrix[i]){
-            outputValue = i;
-        } else {
-            break;
-        }
+void checkAndBlinkError(int adcValue){
+    if (adcValue == 1023){
+        digitalWrite(LED_PIN, 1);
+        delay(100);
+        digitalWrite(LED_PIN, 0);
+        delay(100);
     }
-    #ifdef DEBUG
-        Serial.println("real speed: " + String(outputValue));
-    #endif
-    analogWrite(FANPIN, outputValue);
 }
-// int value = 0;
-// void loop(){
-//     value += 1;
-//     setRotation(value);
-//     delay(500);
-// }
 
-bool en = 0;
+int16_t read_temp(){
+    auto adcValue = analogRead(THERMORESISTOR_PIN);
+    checkAndBlinkError(adcValue);
+    auto temp = calc_temperature(adcValue);
+    #ifdef DEBUG_ALLOWED
+        //debug_info("a:" , adcValue, " t:" , temp);
+    #endif
+    return temp;
+}
+void stop(){
+    FastPwmPin::enablePwmPin(FAN_PIN, 35000 , 1);
+    #ifdef DEBUG_ALLOWED
+        debug_info("fan off");
+    #endif
+    digitalWrite(FAN_PIN, 0);
+}
+
+bool checkDiff(unsigned long value, unsigned long * last){
+    auto m = millis();
+    if (*last > m){
+        *last = m;
+        return false;
+    }
+    return m - value > *last;
+}
+
+void initialDelay(){
+    #ifdef __AVR_ATtiny13__
+        delay(100);
+    #else
+        delay(500); 
+    #endif 
+}
+
+unsigned long last_on = 0;
 void loop(){
-    // en = !en;
-    // digitalWrite(PB1, en);
-    int resValue = analogRead(VAR_RES_PIN);
-    float multiplier = (float) resValue / 1024 ;
-    min_temp = MAX_TEMP * multiplier;
-    float res = readResistance();
-    float temp = resToTemp(res);
-    float tempDiff = MAX_TEMP - min_temp;
-    float rotationSpeed = 0;
-    if (temp >= MAX_TEMP){
-        rotationSpeed = MAX_OUTPUT;
-    } else if (temp > min_temp){
-        rotationSpeed = (temp - min_temp) * (RDIFF / tempDiff);
-    }
-    #ifdef DEBUG
-        Serial.println("Resistance: " + String(res));
-        Serial.println("Temperature " + String(temp));
-    #endif
-    setRotation(rotationSpeed);
-    delay(500);
-    #ifdef DEBUG
-        Serial.println(" temp: " + String(temp) + " R: "
-         + String(rotationSpeed) + " V: " + String(min_temp)
-         + " res: " + String(resValue) 
-         + " multiplier: " + String(multiplier) 
-         );
-    #endif
+    auto temp = read_temp();
+    digitalWrite(LED_PIN, temp > 40);
+    int percentage;
+    if (temp > MIN_TEMP){
+        if (checkDiff(1000, &last_on)){
+            FastPwmPin::enablePwmPin(FAN_PIN, 35000 , 99);
+            initialDelay();
+        } else {
+            if (temp >= MAX_TEMP){
+                percentage = 99;
+            } else {
+                percentage = ((temp - MIN_TEMP) * 100) * (100 / (MAX_TEMP - MIN_TEMP)) / 100;
+                percentage += 10;
+            }
+            if (percentage >= 100){
+                percentage = 99;
+            }
+            #ifdef DEBUG_ALLOWED
+                debug_info("t:" , temp, " p:" , percentage);
+            #endif
+            FastPwmPin::enablePwmPin(FAN_PIN, 35000 , percentage);
+        }
+        last_on = millis();
+    } else {
+        stop();
+    }   
 }
+
+

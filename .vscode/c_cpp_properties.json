@@ -1,64 +1,57 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
 {
     "configurations": [
         {
-            "name": "!!! WARNING !!! AUTO-GENERATED FILE, PLEASE DO NOT MODIFY IT AND USE https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags"
-        },
-        {
-            "name": "Linux",
+            "name": "PlatformIO",
             "includePath": [
-                "/home/shaddy/sloeber-workspace/reobas/include",
-                "/home/shaddy/sloeber-workspace/reobas/src",
-                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/cores/tiny",
-                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5",
-                "/home/shaddy/.platformio/lib/LiquidCrystal_ID887/src",
-                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/ATTinyCore/src",
-                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/EEPROM",
-                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/SPI",
-                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/Servo/src",
-                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/Servo_ATTinyCore/src",
-                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/SoftwareSerial",
-                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/Wire/src",
-                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/tinyNeoPixel",
-                "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/tinyNeoPixel_Static",
+                "/home/shaddy/sloeber-workspace/pwmFan_new/include",
+                "/home/shaddy/sloeber-workspace/pwmFan_new/src",
+                "/home/shaddy/sloeber-workspace/pwmFan_new/.pio/libdeps/attiny13/Fast PWM Pin",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-microcore/cores/MicroCore",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-microcore/variants/attiny13",
+                "/home/shaddy/.platformio/lib/LiquidCrystal",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-microcore/libraries/AVR_examples/src",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-microcore/libraries/EEPROM/src",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-microcore/libraries/Serial_exampes/src",
+                "/home/shaddy/.platformio/packages/framework-arduino-avr-microcore/libraries/TinySPI/src",
                 "/home/shaddy/.platformio/packages/tool-unity",
                 ""
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "/home/shaddy/sloeber-workspace/reobas/include",
-                    "/home/shaddy/sloeber-workspace/reobas/src",
-                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/cores/tiny",
-                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/variants/tinyX5",
-                    "/home/shaddy/.platformio/lib/LiquidCrystal_ID887/src",
-                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/ATTinyCore/src",
-                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/EEPROM",
-                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/SPI",
-                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/Servo/src",
-                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/Servo_ATTinyCore/src",
-                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/SoftwareSerial",
-                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/Wire/src",
-                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/tinyNeoPixel",
-                    "/home/shaddy/.platformio/packages/framework-arduino-avr-attiny/libraries/tinyNeoPixel_Static",
+                    "/home/shaddy/sloeber-workspace/pwmFan_new/include",
+                    "/home/shaddy/sloeber-workspace/pwmFan_new/src",
+                    "/home/shaddy/sloeber-workspace/pwmFan_new/.pio/libdeps/attiny13/Fast PWM Pin",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-microcore/cores/MicroCore",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-microcore/variants/attiny13",
+                    "/home/shaddy/.platformio/lib/LiquidCrystal",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-microcore/libraries/AVR_examples/src",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-microcore/libraries/EEPROM/src",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-microcore/libraries/Serial_exampes/src",
+                    "/home/shaddy/.platformio/packages/framework-arduino-avr-microcore/libraries/TinySPI/src",
                     "/home/shaddy/.platformio/packages/tool-unity",
                     ""
                 ]
             },
             "defines": [
-                "PLATFORMIO=40304",
-                "ARDUINO_AVR_ATTINYX5",
+                "PLATFORMIO=50100",
+                "ARDUINO_AVR_ATTINY13",
                 "F_CPU=8000000L",
                 "ARDUINO_ARCH_AVR",
                 "ARDUINO=10808",
-                "__AVR_ATtiny45__",
+                "__AVR_ATtiny13__",
                 ""
             ],
-            "intelliSenseMode": "clang-x64",
             "cStandard": "c11",
             "cppStandard": "c++11",
             "compilerPath": "/home/shaddy/.platformio/packages/toolchain-atmelavr/bin/avr-gcc",
             "compilerArgs": [
-                "-mmcu=attiny45",
+                "-mmcu=attiny13",
                 ""
             ]
         }
