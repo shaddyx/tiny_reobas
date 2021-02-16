@@ -6,6 +6,7 @@
 #ifdef ARDUINO_AVR_UNO
     #define THERMORESISTOR_PIN A0
     #define LED_PIN 13
+    // fuses default
 # else
     #define ADC1 1
     #define ADC2 2
@@ -16,32 +17,26 @@
     #define FAN_PIN PB1
 #endif
 
-#define MIN_TEMP 30
-#define MAX_TEMP 80
+#define MIN_TEMP 35
+#define MAX_TEMP 60
+#define MIN_PWM 1
 
 #ifdef __AVR_ATtiny13__
     #define PWM_FREQ 800000
 #else
-    #define PWM_FREQ 35000
+    #define PWM_FREQ 50000
 #endif
 
 
 void tinyDelay(int value){
-    #ifdef __AVR_ATtiny13__
-        // fix default prescaler configuration
-        delay(value / 8);
-    #else
-        delay(value); 
-    #endif 
+    delay(value); 
 }
 
 void setPwm(uint8_t pwm){
-    #ifdef __AVR_ATtiny13__
-        if (pwm < 10){
-            pwm = 10;
-        }
-    #endif
-     if (pwm >= 90){
+    if (pwm < MIN_PWM){
+        pwm = MIN_PWM;
+    }
+    if (pwm >= 90){
         pwm = 90;
     }
     FastPwmPin::enablePwmPin(FAN_PIN, PWM_FREQ , pwm);
@@ -56,15 +51,27 @@ void stop(){
 }
 
 void setup(){
+    OSCCAL = 82;    // calculated value for softwareSerial
+
+    //OSCCAL = 93;    // calculated value for softwareSerial
     debug_init();
-    //stop();
     pinMode(LED_PIN, OUTPUT);
     pinMode(THERMORESISTOR_PIN, INPUT);
     digitalWrite(LED_PIN, 1);
+    pinMode(FAN_PIN, OUTPUT);
+    digitalWrite(FAN_PIN, 0);
     #ifdef DEBUG_ALLOWED
         debug_info("init complete");
     #endif
     tinyDelay(1000);
+    #ifdef DEBUG_ALLOWED
+        debug_info("Pin off");
+    #endif
+    digitalWrite(LED_PIN, 0);
+    tinyDelay(1000);
+    #ifdef DEBUG_ALLOWED
+        debug_info("Starting");
+    #endif
 }
 
 void checkAndBlinkError(int adcValue){
@@ -99,17 +106,19 @@ bool checkDiff(unsigned long value, unsigned long * last){
 void initialDelay(){
     digitalWrite(LED_PIN, 0);
     tinyDelay(500);
+
     digitalWrite(LED_PIN, 1);
     tinyDelay(500);
 }
 
 unsigned long last_on = 0;
+unsigned long last_off = 0;
 void loop(){
     auto temp = read_temp();
     digitalWrite(LED_PIN, temp > MIN_TEMP);
     int percentage;
     if (temp > MIN_TEMP){
-        if (checkDiff(1000, &last_on)){
+        if (checkDiff(1000, &last_off) && checkDiff(2000, &last_on)){
             setPwm(99);
             initialDelay();
         } else {
@@ -117,16 +126,17 @@ void loop(){
                 percentage = 99;
             } else {
                 percentage = ((temp - MIN_TEMP) * 100) * (100 / (MAX_TEMP - MIN_TEMP)) / 100;
-                percentage += 10;
+                percentage += MIN_PWM;
             }
             #ifdef DEBUG_ALLOWED
                 debug_info("t:" , temp, " p:" , percentage);
             #endif
             setPwm(percentage);
+            last_on = millis();
         }
-        last_on = millis();
     } else {
         stop();
+        last_off = millis();
     }   
 }
 

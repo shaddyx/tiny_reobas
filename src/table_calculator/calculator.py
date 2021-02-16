@@ -3,10 +3,10 @@ THERMISTORNOMINAL=100000
 TEMPERATURENOMINAL=25
 BCOEFFICIENT=3950
 SERIESRESISTOR=90000
-STEP=5
+STEP=2
 RANGE=1024
-MIN_TEMP=0
-MAX_TEMP=100
+MIN_TEMP=10
+MAX_TEMP=80
 
 def calcR(adcValue):
     reading = float(float(RANGE - 1) / adcValue) - 1
@@ -60,8 +60,19 @@ vals = calcValues()
 vals = flt(vals)
 vals = filter_redunant(vals)
 
-print("values: " + format_values(vals))
-print("adc_values: " + format_adc_values(vals))
+print ('''
+    #pragma once
+
+    #define ADC_VALUES {{ {vals} }}
+    #define TEMP_VALUES {{ {adc_vals} }}
+    #define ADC_MAX_TEMP {max_temp}
+    #define ADC_MIN_TEMP {min_temp}
+    #define ADC_TEMP_STEP {step}
+'''.format(vals = format_values(vals), adc_vals = format_adc_values(vals), max_temp = MAX_TEMP, min_temp = MIN_TEMP, step = STEP))
+
+#print("values: " + format_values(vals))
+#print("adc_values: " + format_adc_values(vals))
+
 
 
 
