@@ -21,6 +21,8 @@
 #define MAX_TEMP 60
 #define MIN_PWM 1
 
+#define TEST_MODE 1
+
 #ifdef __AVR_ATtiny13__
     #define PWM_FREQ 800000
 #else
@@ -113,12 +115,31 @@ void initialDelay(){
 
 unsigned long last_on = 0;
 unsigned long last_off = 0;
+
+#if TEST_MODE == 1
+int step = 0;
+void test_loop(){
+    digitalWrite(LED_PIN, 1);
+    if (step > 5){
+        step = 0;
+    }
+    FastPwmPin::enablePwmPin(FAN_PIN, PWM_FREQ , 20 * step);
+    step ++;
+    delay(500);
+    digitalWrite(LED_PIN, 0);
+    delay(3000);
+}
+#endif
+
 void loop(){
+    #if TEST_MODE == 1
+        test_loop();
+    #else
     auto temp = read_temp();
     digitalWrite(LED_PIN, temp > MIN_TEMP);
     int percentage;
     if (temp > MIN_TEMP){
-        if (checkDiff(1000, &last_off) && checkDiff(2000, &last_on)){
+        if (checkDiff(1000, &last_off)){
             setPwm(99);
             initialDelay();
         } else {
@@ -138,6 +159,7 @@ void loop(){
         stop();
         last_off = millis();
     }   
+    #endif
 }
 
 
