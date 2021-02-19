@@ -1,10 +1,10 @@
 #include <Arduino.h>
 #include "debug.h"
-
+#include "config.h"
 
 #ifdef EMULATION
     #include <SoftwareSerial.h>
-    SoftwareSerial mySerial(PB2, PB0); // RX, TX
+    SoftwareSerial mySerial(DEBUG_RX, DEBUG_TX); // RX, TX
 #endif // EMULATION
 
 
