@@ -7,7 +7,7 @@
     SoftwareSerial mySerial(DEBUG_RX, DEBUG_TX); // RX, TX
 #endif // EMULATION
 
-
+#ifdef DEBUG_ALLOWED
 
 void debug_init(){
     #ifdef ARDUINO_AVR_UNO
@@ -48,3 +48,5 @@ void debug_info(char * str, int16_t val, char * str1, int16_t val1 ){
         mySerial.println(val1);
     #endif
 }
+
+#endif

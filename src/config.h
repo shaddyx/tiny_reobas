@@ -6,22 +6,24 @@
 #ifdef ARDUINO_AVR_UNO
     #define THERMORESISTOR_PIN A0
     #define LED_PIN 13
+    #define FAN_PIN 9
     // fuses default
 # else
-    #define ADC1 1
     #define ADC2 2
-    #define ADC3 3
-    #define ADC4 4
     #define THERMORESISTOR_PIN ADC2
     #define LED_PIN PB3
     #define FAN_PIN PB0
 #endif
 
-#define MIN_TEMP 35
+#define MIN_TEMP 32
+#define MIN_TEMP_START 37
 #define MAX_TEMP 60
-#define MIN_PWM 1
 
-#define TEST_MODE 1
+
+#define COLD_START_PWM 50
+#define MIN_PWM 10
+
+#define TEST_MODE 0
 
 #ifdef __AVR_ATtiny13__
     #define PWM_FREQ 800000

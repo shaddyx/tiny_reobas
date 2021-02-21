@@ -4,17 +4,14 @@
 #include "config.h"
 #include "temp_to_percentage.h"
 #include "pwm/pwm_control.h"
+#include "state.h"
 
 void tinyDelay(int value){
     delay(value); 
 }
 
-
-
 void stop(){
-    #ifdef DEBUG_ALLOWED
-        debug_info("fan off");
-    #endif
+    debug_info("fan off");
     setPwm(0);
 }
 
@@ -28,22 +25,17 @@ void setup(){
     digitalWrite(LED_PIN, 1);
     pinMode(FAN_PIN, OUTPUT);
     digitalWrite(FAN_PIN, 0);
-    #ifdef DEBUG_ALLOWED
-        debug_info("init complete");
-    #endif
+    debug_info("init complete");
     tinyDelay(1000);
-    #ifdef DEBUG_ALLOWED
-        debug_info("Pin off");
-    #endif
+    debug_info("Pin off");
     digitalWrite(LED_PIN, 0);
     tinyDelay(1000);
-    #ifdef DEBUG_ALLOWED
-        debug_info("Starting");
-    #endif
+    debug_info("Starting");
 }
 
 void checkAndBlinkError(int adcValue){
     if (adcValue == 1023){
+        debug_info("error!!!");
         digitalWrite(LED_PIN, 1);
         tinyDelay(100);
         digitalWrite(LED_PIN, 0);
@@ -55,9 +47,7 @@ int16_t read_temp(){
     auto adcValue = analogRead(THERMORESISTOR_PIN);
     checkAndBlinkError(adcValue);
     auto temp = calc_temperature(adcValue);
-    #ifdef DEBUG_ALLOWED
-        //debug_info("a:" , adcValue, " t:" , temp);
-    #endif
+    //debug_info("a:" , adcValue, " t:" , temp);
     return temp;
 }
 
@@ -72,26 +62,29 @@ bool checkDiff(unsigned long value, unsigned long * last){
 }
 
 void initialDelay(){
+    debug_info("initial delay");
     digitalWrite(LED_PIN, 0);
     tinyDelay(500);
 
     digitalWrite(LED_PIN, 1);
     tinyDelay(500);
 }
-
-unsigned long last_on = 0;
-unsigned long last_off = 0;
-
 #if TEST_MODE == 1
 int step = 0;
 int direction = 1;
 void test_loop(){
     digitalWrite(LED_PIN, 1);
-    delay(1000);
+    delay(10);
     digitalWrite(LED_PIN, 0);
+    //debug_info("percents:", step);
     setPwmPercents(step);
-    delay(1000);
-    step += direction * 10;
+    if (step == 0 || step == 100){
+        delay(2000);
+    } else {
+        delay(10);
+    }
+    
+    step += direction * 1;
     if (step >= 100){
         direction = -1;
         step = 100;
@@ -103,34 +96,47 @@ void test_loop(){
 }
 #endif
 
+State<int16_t> temp(0);
+State<bool> on(false);
+int16_t prevTemp = 0;
+
 void loop(){
     #if TEST_MODE == 1
         test_loop();
+        return;
     #else
-    auto temp = read_temp();
-    digitalWrite(LED_PIN, temp > MIN_TEMP);
+    delay(100);
+    temp.updateValue(read_temp());
+    digitalWrite(LED_PIN, temp.value > MIN_TEMP);
     int percentage;
-    if (temp > MIN_TEMP){
-        if (checkDiff(1000, &last_off)){
-            setPwm(99);
-            initialDelay();
-        } else {
-            if (temp >= MAX_TEMP){
-                percentage = 99;
-            } else {
-                percentage = calc_percentage(temp, MIN_TEMP, MAX_TEMP);
-                percentage += MIN_PWM;
-            }
-            #ifdef DEBUG_ALLOWED
-                debug_info("t:" , temp, " p:" , percentage);
-            #endif
-            setPwm(percentage);
-            last_on = millis();
+
+    if (prevTemp == temp.value){
+        return;
+    }
+    if (temp.value > MIN_TEMP){
+        if (!on.value && temp.value < MIN_TEMP_START){
+            return;
         }
+        if (temp.value >= MAX_TEMP){
+            percentage = 100;
+        } else {
+            percentage = calc_percentage(temp.value, MIN_TEMP, MAX_TEMP);
+        }
+        if (!on.value){
+            debug_info("cold start");
+            percentage = COLD_START_PWM;
+        }
+        debug_info("t:" , temp.value, " p:" , percentage);
+        if (percentage < MIN_PWM){
+            percentage = MIN_PWM;
+        }
+        setPwmPercents(percentage);
+        on.updateValue(true);
     } else {
         stop();
-        last_off = millis();
+        on.updateValue(false);
     }   
+    prevTemp = temp.value;
     #endif
 }
 
