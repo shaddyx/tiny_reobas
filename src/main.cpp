@@ -61,14 +61,6 @@ bool checkDiff(unsigned long value, unsigned long * last){
     return m - value > *last;
 }
 
-void initialDelay(){
-    debug_info("initial delay");
-    digitalWrite(LED_PIN, 0);
-    tinyDelay(500);
-
-    digitalWrite(LED_PIN, 1);
-    tinyDelay(500);
-}
 #if TEST_MODE == 1
 int step = 0;
 int direction = 1;
@@ -107,7 +99,6 @@ void loop(){
     #else
     delay(100);
     temp.updateValue(read_temp());
-    digitalWrite(LED_PIN, temp.value > MIN_TEMP);
     int percentage;
 
     if (prevTemp == temp.value){
@@ -124,17 +115,23 @@ void loop(){
         }
         if (!on.value){
             debug_info("cold start");
-            percentage = COLD_START_PWM;
+            setPwmPercents(COLD_START_PWM);
+            for (int i=0; i<10; i++){
+                delay(100);
+                digitalWrite(LED_PIN, i % 2);
+            }
         }
         debug_info("t:" , temp.value, " p:" , percentage);
         if (percentage < MIN_PWM){
             percentage = MIN_PWM;
         }
         setPwmPercents(percentage);
+        digitalWrite(LED_PIN, true);
         on.updateValue(true);
     } else {
         stop();
         on.updateValue(false);
+        digitalWrite(LED_PIN, false);
     }   
     prevTemp = temp.value;
     #endif
