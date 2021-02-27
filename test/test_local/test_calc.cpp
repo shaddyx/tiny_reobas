@@ -13,5 +13,5 @@ void test_percentage(void){
     TEST_ASSERT_EQUAL_INT(79, calc_percentage(80, 1, 100));
     TEST_ASSERT_EQUAL_INT(89, calc_percentage(90, 1, 100));
     TEST_ASSERT_EQUAL_INT(100, calc_percentage(1000, 1, 100));
-    TEST_ASSERT_EQUAL_INT(0, calc_percentage(0, 1, 100));
+    TEST_ASSERT_EQUAL_INT(1, calc_percentage(1, 0, 100));
 }

@@ -17,12 +17,13 @@ bool initialized = false;
 void stopPwm(){
     initialized = false;
     pwm_stop();
+    pinMode(FAN_PIN, OUTPUT);
+    digitalWrite(FAN_PIN, 0);
 }
 
 void setPwm(uint8_t pwm){
     if (pwm == 0){
         stopPwm();
-        digitalWrite(FAN_PIN, 0);
         return;
     }
     if (pwm >= 255){

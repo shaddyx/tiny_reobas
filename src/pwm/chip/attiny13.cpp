@@ -19,5 +19,6 @@
     }
     void pwm_stop(){
         TCCR0B &= ~((1<<CS02)|(1<<CS01)|(1<<CS00)); // stop the timer
+        TCCR0A = 0;    //   disconnect register from pin
     }
 #endif

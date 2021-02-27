@@ -2,7 +2,7 @@ import math
 THERMISTORNOMINAL=100000
 TEMPERATURENOMINAL=25
 BCOEFFICIENT=3950
-SERIESRESISTOR=90000
+SERIESRESISTOR=100000
 STEP=2
 RANGE=1024
 MIN_TEMP=10
@@ -63,12 +63,13 @@ vals = filter_redunant(vals)
 print ('''
     #pragma once
 
-    #define ADC_VALUES {{ {vals} }}
+    //#define ADC_VALUES {{ {vals} }}
     #define TEMP_VALUES {{ {adc_vals} }}
     #define ADC_MAX_TEMP {max_temp}
     #define ADC_MIN_TEMP {min_temp}
     #define ADC_TEMP_STEP {step}
-'''.format(vals = format_values(vals), adc_vals = format_adc_values(vals), max_temp = MAX_TEMP, min_temp = MIN_TEMP, step = STEP))
+    #define SERIESRESISTOR {series_resistor}
+'''.format(vals = format_values(vals), adc_vals = format_adc_values(vals), max_temp = MAX_TEMP, min_temp = MIN_TEMP, step = STEP, series_resistor=SERIESRESISTOR))
 
 #print("values: " + format_values(vals))
 #print("adc_values: " + format_adc_values(vals))
