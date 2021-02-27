@@ -7,4 +7,3 @@
     #define ADC_MIN_TEMP 10
     #define ADC_TEMP_STEP 2
     #define SERIESRESISTOR 100000
-

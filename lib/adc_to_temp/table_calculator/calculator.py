@@ -1,4 +1,7 @@
 import math
+import os 
+dir_path = 'lib/adc_to_temp/table_calculator/'
+
 THERMISTORNOMINAL=100000
 TEMPERATURENOMINAL=25
 BCOEFFICIENT=3950
@@ -60,7 +63,7 @@ vals = calcValues()
 vals = flt(vals)
 vals = filter_redunant(vals)
 
-print ('''
+open(os.path.join(dir_path, "result.h"), "w").write('''
     #pragma once
 
     //#define ADC_VALUES {{ {vals} }}
