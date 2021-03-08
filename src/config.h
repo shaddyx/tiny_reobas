@@ -17,8 +17,9 @@
 
 #define MIN_TEMP 32
 #define MIN_TEMP_START 37
-#define MAX_TEMP 60
+#define MAX_TEMP 45
 
+#define TEMP_NUM_READS 5
 
 #define COLD_START_PWM 50
 #define MIN_PWM 10

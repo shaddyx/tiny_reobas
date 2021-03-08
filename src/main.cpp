@@ -43,8 +43,18 @@ void checkAndBlinkError(int adcValue){
     }
 }
 
+int getTemp(){
+    uint16_t result = 0;
+    for (int i = 0; i < TEMP_NUM_READS; i++){
+       result += analogRead(THERMORESISTOR_PIN) * 10;
+       delay(10);
+    }
+    return (result / TEMP_NUM_READS) / 10;
+
+}
+
 int16_t read_temp(){
-    auto adcValue = analogRead(THERMORESISTOR_PIN);
+    auto adcValue = getTemp();
     checkAndBlinkError(adcValue);
     auto temp = calc_temperature(adcValue);
     //debug_info("a:" , adcValue, " t:" , temp);
