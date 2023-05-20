@@ -1,7 +1,7 @@
 #include "../util.h"
 #include "table_calculator/result.h"
 
-#ifdef UNIT_TEST
+#if defined(UNIT_TEST) || defined(PIO_UNIT_TESTING)
     #include <stdint.h>
     const int16_t vals[] = TEMP_VALUES; 
     #define ADC_TABLE_READ(i) vals[i]
