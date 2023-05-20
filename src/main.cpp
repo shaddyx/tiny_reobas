@@ -20,15 +20,18 @@ void setup(){
 
     //OSCCAL = 93;    // calculated value for softwareSerial
     debug_init();
-    pinMode(LED_PIN, OUTPUT);
+    #if DEBUG_LED == 1 
+        pinMode(LED_PIN, OUTPUT);
+        digitalWrite(LED_PIN, 1);
+        debugLed(0);
+    #endif
+
     pinMode(THERMORESISTOR_PIN, INPUT);
-    digitalWrite(LED_PIN, 1);
     pinMode(FAN_PIN, OUTPUT);
     digitalWrite(FAN_PIN, 0);
     debug_info("init complete");
     tinyDelay(1000);
     debug_info("Pin off");
-    digitalWrite(LED_PIN, 0);
     tinyDelay(1000);
     debug_info("Starting");
 }
@@ -36,9 +39,9 @@ void setup(){
 void checkAndBlinkError(int adcValue){
     if (adcValue == 1023){
         debug_info("error!!!");
-        digitalWrite(LED_PIN, 1);
+        debugLed(1);
         tinyDelay(100);
-        digitalWrite(LED_PIN, 0);
+        debugLed(0);
         tinyDelay(100);
     }
 }
@@ -75,9 +78,9 @@ bool checkDiff(unsigned long value, unsigned long * last){
 int step = 0;
 int direction = 1;
 void test_loop(){
-    digitalWrite(LED_PIN, 1);
+    debugLed(1);
     delay(10);
-    digitalWrite(LED_PIN, 0);
+    debugLed(0);
     //debug_info("percents:", step);
     setPwmPercents(step);
     if (step == 0 || step == 100){
@@ -101,6 +104,7 @@ void test_loop(){
 State<int16_t> temp(0);
 State<bool> on(false);
 int16_t prevTemp = 0;
+
 
 void loop(){
     #if TEST_MODE == 1
@@ -128,7 +132,7 @@ void loop(){
             setPwmPercents(COLD_START_PWM);
             for (int i=0; i<10; i++){
                 delay(100);
-                digitalWrite(LED_PIN, i % 2);
+                debugLed( i % 2 );
             }
         }
         debug_info("t:" , temp.value, " p:" , percentage);
@@ -136,12 +140,12 @@ void loop(){
             percentage = MIN_PWM;
         }
         setPwmPercents(percentage);
-        digitalWrite(LED_PIN, true);
+        debugLed(true);
         on.updateValue(true);
     } else {
         stop();
         on.updateValue(false);
-        digitalWrite(LED_PIN, false);
+        debugLed(false);
     }   
     prevTemp = temp.value;
     #endif

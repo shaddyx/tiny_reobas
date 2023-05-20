@@ -41,7 +41,7 @@ def flt(r):
     return list(r)
 
 
-def filter_redunant(r):
+def filter_redundant(r):
     res = []
     prev = None
     for k in r:
@@ -61,7 +61,7 @@ def format_adc_values(r):
 
 vals = calcValues()
 vals = flt(vals)
-vals = filter_redunant(vals)
+vals = filter_redundant(vals)
 
 open(os.path.join(dir_path, "result.h"), "w").write('''
     #pragma once

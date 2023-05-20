@@ -1,6 +1,7 @@
 #pragma once
 #include <Arduino.h>
 
+#define DEBUG_LED 0
 #define FORCE_DEBUG 0
 #ifdef ARDUINO_AVR_UNO
     #define DEBUG_ALLOWED
@@ -21,3 +22,9 @@
     #define debug_info(...)
 #endif
 
+
+#if DEBUG_LED == 1
+    #define debugLed(v) digitalWrite(LED_PIN, v);
+#else
+    #define debugLed(v)
+#endif
