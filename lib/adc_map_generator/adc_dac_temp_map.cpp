@@ -1,5 +1,5 @@
+#include "result.h"
 #include "../util.h"
-#include "table_calculator/result.h"
 
 #if defined(UNIT_TEST) || defined(PIO_UNIT_TESTING)
     #include <stdint.h>
@@ -12,18 +12,15 @@
     #define ADC_TABLE_READ(i) pgm_read_word(&vals[i])
 #endif // HW_MODE
 
-int8_t calc_address(uint16_t adc_value){
-    if (adc_value < ADC_TABLE_READ(0)){
-        return 0;
-    }
-    for (unsigned int i=0; i < ARRAY_SIZE(vals); i++){
-        if (adc_value <= ADC_TABLE_READ(i)){
-            return i;
+unsigned int calc_address(unsigned int adc_value){
+    for (unsigned int i=0; i < ARRAY_SIZE(vals); i += 2){
+        if (adc_value >= ADC_TABLE_READ(i)){
+            return i + 1; // division by 2
         }
     }
     return ARRAY_SIZE(vals) - 1;
 }
 
-int16_t calc_temperature(uint16_t adcsum){
-    return ADC_MAX_TEMP - calc_address(adcsum) * ADC_TEMP_STEP;
+unsigned int adc_to_dac(unsigned int adc){
+    return ADC_TABLE_READ(calc_address(adc));  
 }

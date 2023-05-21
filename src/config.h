@@ -15,20 +15,14 @@
     #define FAN_PIN PB0
 #endif
 
-#define MIN_TEMP 32
-#define MIN_TEMP_START 37
-#define MAX_TEMP 45
-
-#define TEMP_NUM_READS 5
-
-#define COLD_START_PWM 50
-#define MIN_PWM 10
-
-#define TEST_MODE 0
-
 #ifdef __AVR_ATtiny13__
     #define PWM_FREQ 800000
 #else
     #define PWM_FREQ 50000
 #endif
 
+
+#define TEMP_NUM_READS 5
+#define COLD_START_PWM 150
+#define COLD_START_DELAY_AFTER_ON 100
+#define COLD_START_DELAY 200

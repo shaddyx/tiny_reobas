@@ -39,8 +39,3 @@ void setPwm(uint8_t pwm){
     }
     pwm_set_duty(pwm);
 }
-void setPwmPercents(uint8_t pwm){
-    auto duty = pwm * 255 / 100;
-    debug_info("duty:", duty, " pwm:", pwm);
-    setPwm(duty);
-}

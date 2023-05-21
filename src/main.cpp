@@ -1,14 +1,11 @@
 #include <Arduino.h>
-#include <thermoresistor_calc.h>
 #include "debug.h"
 #include "config.h"
-#include "temp_to_percentage.h"
 #include "pwm/pwm_control.h"
 #include "state.h"
-
-void tinyDelay(int value){
-    delay(value); 
-}
+#include "adc/adc.h"
+#include <adc_dac_temp_map.h>
+#include "tiny_delay.h"
 
 void stop(){
     debug_info("fan off");
@@ -17,138 +14,29 @@ void stop(){
 
 void setup(){
     OSCCAL = 82;    // calculated value for softwareSerial
-
-    //OSCCAL = 93;    // calculated value for softwareSerial
-    debug_init();
-    #if DEBUG_LED == 1 
-        pinMode(LED_PIN, OUTPUT);
-        digitalWrite(LED_PIN, 1);
-        debugLed(0);
-    #endif
-
     pinMode(THERMORESISTOR_PIN, INPUT);
     pinMode(FAN_PIN, OUTPUT);
     digitalWrite(FAN_PIN, 0);
-    debug_info("init complete");
-    tinyDelay(1000);
-    debug_info("Pin off");
-    tinyDelay(1000);
-    debug_info("Starting");
-}
-
-void checkAndBlinkError(int adcValue){
-    if (adcValue == 1023){
-        debug_info("error!!!");
-        debugLed(1);
-        tinyDelay(100);
-        debugLed(0);
-        tinyDelay(100);
-    }
-}
-
-int getTemp(){
-    uint16_t result = 0;
-    for (int i = 0; i < TEMP_NUM_READS; i++){
-       result += analogRead(THERMORESISTOR_PIN) * 10;
-       delay(10);
-    }
-    return (result / TEMP_NUM_READS) / 10;
-
-}
-
-int16_t read_temp(){
-    auto adcValue = getTemp();
-    checkAndBlinkError(adcValue);
-    auto temp = calc_temperature(adcValue);
-    //debug_info("a:" , adcValue, " t:" , temp);
-    return temp;
 }
 
 
-bool checkDiff(unsigned long value, unsigned long * last){
-    auto m = millis();
-    if (*last > m){
-        *last = m;
-        return false;
-    }
-    return m - value > *last;
-}
-
-#if TEST_MODE == 1
-int step = 0;
-int direction = 1;
-void test_loop(){
-    debugLed(1);
-    delay(10);
-    debugLed(0);
-    //debug_info("percents:", step);
-    setPwmPercents(step);
-    if (step == 0 || step == 100){
-        delay(2000);
-    } else {
-        delay(10);
-    }
-    
-    step += direction * 1;
-    if (step >= 100){
-        direction = -1;
-        step = 100;
-    }
-    if (step <= 0){
-        direction = 1;
-        step = 0;
-    }
-}
-#endif
-
-State<int16_t> temp(0);
 State<bool> on(false);
-int16_t prevTemp = 0;
+bool cold_started = false;
 
+void cold_start(){
+    cold_started = true;
+    setPwm(COLD_START_PWM);
+    tiny_delay(COLD_START_DELAY);
+}
 
 void loop(){
-    #if TEST_MODE == 1
-        test_loop();
-        return;
-    #else
-    delay(100);
-    temp.updateValue(read_temp());
-    int percentage;
-
-    if (prevTemp == temp.value){
-        return;
+    auto dac_value = adc_to_dac(getAdcValue());
+    if (!cold_started && on.value && on.changeOlderThan(COLD_START_DELAY_AFTER_ON)){
+        cold_start();
     }
-    if (temp.value > MIN_TEMP){
-        if (!on.value && temp.value < MIN_TEMP_START){
-            return;
-        }
-        if (temp.value >= MAX_TEMP){
-            percentage = 100;
-        } else {
-            percentage = calc_percentage(temp.value, MIN_TEMP, MAX_TEMP);
-        }
-        if (!on.value){
-            debug_info("cold start");
-            setPwmPercents(COLD_START_PWM);
-            for (int i=0; i<10; i++){
-                delay(100);
-                debugLed( i % 2 );
-            }
-        }
-        debug_info("t:" , temp.value, " p:" , percentage);
-        if (percentage < MIN_PWM){
-            percentage = MIN_PWM;
-        }
-        setPwmPercents(percentage);
-        debugLed(true);
-        on.updateValue(true);
-    } else {
-        stop();
-        on.updateValue(false);
-        debugLed(false);
-    }   
-    prevTemp = temp.value;
-    #endif
+    on.updateValue(dac_value > 0);
+    if (!on.value){
+        cold_started = false;
+    }
+    setPwm(dac_value);
 }
-
-

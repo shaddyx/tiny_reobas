@@ -1,3 +1,4 @@
+#pragma once
 #include <Arduino.h>
 template <class T>
 class State{
@@ -10,6 +11,22 @@ class State{
         State(){
 
         }
+        bool isGreater(T value){
+            return value > this->value;
+        }
+
+        bool isLess(T value){
+            return value < this->value;
+        }
+
+        bool isEquals(T value){
+            return value == this->value;
+        }
+        
+        bool isChanged(T value){
+            return value != this->value;
+        }
+
         void updateValue(T value){
             if (this->value != value) {
                 this->value = value;
