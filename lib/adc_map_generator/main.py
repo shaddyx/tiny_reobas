@@ -40,7 +40,9 @@ for temp, percentage in temp_to_percentage_map.items():
     res.append(str(adc_value))
     res.append(str(da.percentage_to_dac(percentage)))
 
-open(os.path.join(cnf.DIR_PATH, "result.h"), "w").write('''
+output_file = os.path.join("lib/adc_map_generator/", cnf.DIR_PATH, "result.h")
+print("saving result to: {}".format(output_file))
+open(output_file, "w").write('''
 #pragma once
 #define TEMP_VALUES {{ {adc_vals} }}
 '''.format(adc_vals=", ".join(res)))

@@ -1,2 +1,6 @@
 .pio
 .vscode
+*.pyc
+.idea
+__pycache__
+result.h
