@@ -6,5 +6,5 @@ class Adc:
         self.conf = conf
 
     def adc_to_resistance(self, adc_value):
-        adc_relativeness = float(self.conf.ADC_RANGE) / (adc_value + 1)
+        adc_relativeness =  self.conf.ADC_RANGE / (adc_value + 1)
         return float(self.conf.SERIESRESISTOR) / adc_relativeness

@@ -18,6 +18,7 @@ void setup(){
     pinMode(THERMORESISTOR_PIN, INPUT);
     pinMode(FAN_PIN, OUTPUT);
     digitalWrite(FAN_PIN, 0);
+    debug_init();
 }
 
 
@@ -38,6 +39,8 @@ void loop(){
     #endif
 
     auto dac_value = adc_to_dac(adc_value);
+    debug_info("ADCValue:", adc_value);
+    debug_info("DACValue:", dac_value);
     if (!cold_started && on.value && on.changeOlderThan(COLD_START_DELAY_AFTER_ON)){
         cold_start();
     }

@@ -15,7 +15,7 @@
 unsigned int calc_address(unsigned int adc_value){
     for (unsigned int i=0; i < ARRAY_SIZE(vals); i += 2){
         if (adc_value >= ADC_TABLE_READ(i)){
-            return i + 1; // division by 2
+            return i + 1;
         }
     }
     return ARRAY_SIZE(vals) - 1;
