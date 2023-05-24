@@ -45,4 +45,5 @@ print("saving result to: {}".format(output_file))
 open(output_file, "w").write('''
 #pragma once
 #define TEMP_VALUES {{ {adc_vals} }}
-'''.format(adc_vals=", ".join(res)))
+#define ADC_MAX {max_adc} 
+'''.format(adc_vals=", ".join(res), max_adc = cnf.ADC_RANGE))

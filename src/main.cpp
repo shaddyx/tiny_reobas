@@ -6,6 +6,7 @@
 #include "adc/adc.h"
 #include <adc_dac_temp_map.h>
 #include "tiny_delay.h"
+#include "result.h"
 
 void stop(){
     debug_info("fan off");
@@ -30,7 +31,13 @@ void cold_start(){
 }
 
 void loop(){
-    auto dac_value = adc_to_dac(getAdcValue());
+    #if INVERTED_ADC == 1
+        auto adc_value = ADC_MAX - getAdcValue();
+    #else
+        auto adc_value = getAdcValue();
+    #endif
+
+    auto dac_value = adc_to_dac(adc_value);
     if (!cold_started && on.value && on.changeOlderThan(COLD_START_DELAY_AFTER_ON)){
         cold_start();
     }

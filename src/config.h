@@ -21,7 +21,7 @@
     #define PWM_FREQ 50000
 #endif
 
-
+#define INVERTED_ADC 0  // use 1 if the thermistor connected to the ground, 0 otherwise
 #define TEMP_NUM_READS 5
 #define COLD_START_PWM 150
 #define COLD_START_DELAY_AFTER_ON 100
