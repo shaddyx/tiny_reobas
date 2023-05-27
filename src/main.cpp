@@ -29,24 +29,25 @@ void cold_start(){
     cold_started = true;
     setPwm(COLD_START_PWM);
     tiny_delay(COLD_START_DELAY);
+    debug_init();
 }
 
 void loop(){
-    #if INVERTED_ADC == 1
-        auto adc_value = ADC_MAX - getAdcValue();
-    #else
-        auto adc_value = getAdcValue();
-    #endif
-
+    auto adc_value = getAdcValue();
     auto dac_value = adc_to_dac(adc_value);
     debug_info("ADCValue:", adc_value);
     debug_info("DACValue:", dac_value);
     if (!cold_started && on.value && on.changeOlderThan(COLD_START_DELAY_AFTER_ON)){
         cold_start();
     }
-    on.updateValue(dac_value > 0);
+    if (!on.value && dac_value >= HYSTERESIS_VALUE){
+        on.updateValue(true);
+    } else if (dac_value <= 0){
+        on.updateValue(false);
+    }
+
     if (!on.value){
         cold_started = false;
     }
-    setPwm(dac_value);
+    setPwm(on.value ? dac_value : 0);
 }
