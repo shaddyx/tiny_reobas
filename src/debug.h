@@ -2,6 +2,7 @@
 #include <Arduino.h>
 
 #define DEBUG_LED 0
+#define DEBUG_PWM 1
 #define FORCE_DEBUG 0
 #ifdef ARDUINO_AVR_UNO
     #define DEBUG_ALLOWED

@@ -19,6 +19,10 @@ void setup(){
     pinMode(FAN_PIN, OUTPUT);
     digitalWrite(FAN_PIN, 0);
     debug_init();
+    #if DEBUG_PWM == 1
+        analogWrite(FAN_PIN, 128);
+        while (true) {}
+    #endif
 }
 
 
