@@ -21,7 +21,13 @@
     #define PWM_FREQ 50000
 #endif
 
+
+// The number of times the temperature will be read sequentially to avoid the noise
 #define TEMP_NUM_READS 5
+// The value which will be set to the fan when the cold start is started and will remain for COLD_START_DELAY ms
 #define COLD_START_PWM 150
+// Histeresis trigger delay
+// the logic is the next: if the ADC value is greater than histeresis_VALUE for this amount of time, the fan will be turned on
 #define COLD_START_DELAY_AFTER_ON 100
+// Cold start delay (the time it takes to turn the fan on with COLD_START_PWM value)
 #define COLD_START_DELAY 300

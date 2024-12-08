@@ -7,7 +7,7 @@
 #include <adc_dac_temp_map.h>
 #include "tiny_delay.h"
 #include "result.h"
-#include "hysteresis.h"
+#include "histeresis.h"
 
 void stop(){
     debug_info("fan off");
@@ -28,7 +28,7 @@ void setup(){
 
 
 State<bool> on(false);
-Hysteresis<int> hysteresis(6, 0, 0, ADC_MAX);
+// histeresis<int> histeresis(6, 0, 0, ADC_MAX);
 bool cold_started = false;
 
 void cold_start(){
@@ -40,14 +40,14 @@ void cold_start(){
 
 void loop(){
     auto adc_value = getAdcValue();
-    adc_value = hysteresis.process(adc_value);
+    // adc_value = histeresis.process(adc_value);
     auto dac_value = adc_to_dac(adc_value);
     debug_info("ADCValue:", adc_value);
     debug_info("DACValue:", dac_value);
     if (!cold_started && on.value && on.changeOlderThan(COLD_START_DELAY_AFTER_ON)){
         cold_start();
     }
-    if (!on.value && dac_value >= HYSTERESIS_VALUE){
+    if (!on.value && dac_value >= HISTERESIS_VALUE){
         on.updateValue(true);
     } else if (dac_value <= 0){
         on.updateValue(false);
