@@ -8,6 +8,7 @@
 #include "tiny_delay.h"
 #include "result.h"
 #include "histeresis.h"
+#include "smoother.h"
 
 void stop(){
     debug_info("fan off");
@@ -28,11 +29,13 @@ void setup(){
 
 
 State<bool> on(false);
+Smoother<uint8_t> smoother(SMOOTH_INTERVAL, 0);
 // histeresis<int> histeresis(6, 0, 0, ADC_MAX);
 bool cold_started = false;
 
 void cold_start(){
     cold_started = true;
+    smoother.current = COLD_START_PWM;
     setPwm(COLD_START_PWM);
     tiny_delay(COLD_START_DELAY);
     debug_init();
@@ -40,8 +43,11 @@ void cold_start(){
 
 void loop(){
     auto adc_value = getAdcValue();
+
     // adc_value = histeresis.process(adc_value);
     auto dac_value = adc_to_dac(adc_value);
+    smoother.target = dac_value;
+    dac_value = smoother.poll();
     debug_info("ADCValue:", adc_value);
     debug_info("DACValue:", dac_value);
     if (!cold_started && on.value && on.changeOlderThan(COLD_START_DELAY_AFTER_ON)){

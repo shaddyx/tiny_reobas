@@ -31,3 +31,5 @@
 #define COLD_START_DELAY_AFTER_ON 100
 // Cold start delay (the time it takes to turn the fan on with COLD_START_PWM value)
 #define COLD_START_DELAY 300
+// Smooth interval, the value in ms between the fan value increments or decrements by 1
+#define SMOOTH_INTERVAL 10
